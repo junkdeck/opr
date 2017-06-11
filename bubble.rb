@@ -61,10 +61,11 @@ def bubble_sort_by(arr)
 end
 
 arr = [5,4,9,3,2,1]
+words = ["incredible","hamburger-boy","man"]
 # puts bubble_sort(arr).inspect
 bs = bubble_sort(arr)
-bsb = bubble_sort_by(arr) do |x,y|
-  x <=> y
+bsb = bubble_sort_by(words) do |x,y|
+  x.length <=> y.length
 end
 
 puts "bubble_sort: #{bs.inspect}"
