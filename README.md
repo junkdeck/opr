@@ -1,2 +1,2 @@
 # opr
-storage repository for Odin Project ruby assignments
+storage repo for various ruby scripts
