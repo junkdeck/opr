@@ -43,13 +43,20 @@ module Enumerable
     none = !none
   end
   def j_count(item=true)
-    i = 0
+    # counts the amount of items in a list. counts all items if no argument or block is provided.
+    # increments if argument supplied matches the item, or if the expression in a block evaluates as true
+    i = 0   # increment counter
     self.j_each do |x|
+      # "ignores" the item to check for - used for the if statement beneath
       item = false if block_given?
+      # stores the return value from a supplied block, but only if a block is actually supplied
       yield_return = yield(x) if block_given?
       if item == true || yield_return
+        # increments by one if no arguments supplied, or if a block was supplied.
+        # if neither block or argument was supplied, the "item" remains true and ticks the incrementer
         i += 1
       else
+        # if we're here, it's because we've supplied an argument - only increment if the current item from the array is equal to that value
         i += 1 if item == x
       end
     end
