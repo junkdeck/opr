@@ -42,4 +42,17 @@ module Enumerable
     end
     none = !none
   end
+  def j_count(item=true)
+    i = 0
+    self.j_each do |x|
+      item = false if block_given?
+      yield_return = yield(x) if block_given?
+      if item == true || yield_return
+        i += 1
+      else
+        i += 1 if item == x
+      end
+    end
+    return i
+  end
 end
