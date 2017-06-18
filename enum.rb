@@ -23,43 +23,64 @@ module Enumerable
   def j_all?
     # first false returns false
     first_false = true
-    self.j_each do |x|
-      first_false = false if yield(x) == false
+    if block_given?
+      self.j_each do |x|
+        first_false = false if yield(x) == false
+      end
     end
     return first_false
   end
   def j_any?
     # first true returns true
-    first_true = false
-    self.j_each do |x|
-      first_true = true if yield(x) == true
+    if block_given?
+      first_true = false
+      self.j_each do |x|
+        first_true = true if yield(x) == true
+      end
+      return first_true
     end
-    return first_true
+    return true
   end
   def j_none?
-    none = self.j_any? do |x|
-      yield(x)
+    # essentially an "any?" reverser
+    if block_given?
+      none = self.j_any? do |x|
+        yield(x)
+      end
+      none = !none
     end
-    none = !none
+    return false
   end
-  def j_count(item=true)
+  def j_count(arg=true)
     # counts the amount of items in a list. counts all items if no argument or block is provided.
     # increments if argument supplied matches the item, or if the expression in a block evaluates as true
     i = 0   # increment counter
     self.j_each do |x|
-      # "ignores" the item to check for - used for the if statement beneath
-      item = false if block_given?
-      # stores the return value from a supplied block, but only if a block is actually supplied
-      yield_return = yield(x) if block_given?
-      if item == true || yield_return
+      if block_given?
+        # stores the return value from a supplied block, but only if a block is actually supplied
+        arg = false    # no argument supplied
+        yield_return = yield(x)
+      end
+      if arg == true || yield_return
         # increments by one if no arguments supplied, or if a block was supplied.
-        # if neither block or argument was supplied, the "item" remains true and ticks the incrementer
+        # if neither block or argument was supplied, the "arg" remains true and ticks the incrementer
         i += 1
       else
-        # if we're here, it's because we've supplied an argument - only increment if the current item from the array is equal to that value
-        i += 1 if item == x
+        # if we're here, it's because we've supplied an argument - only increment if the current arg from the array is equal to that value
+        i += 1 if arg == x
       end
     end
     return i
+  end
+  def j_map
+    mapped_array = []
+    self.j_each do |x|
+      mapped_array << yield(x)
+    end
+    return mapped_array
+  end
+  def j_inject
+    # basically reduce
+
   end
 end
