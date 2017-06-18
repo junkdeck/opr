@@ -88,25 +88,30 @@ module Enumerable
   end
 
   def j_inject(i = false, sym = nil)
-    copy_array = self.slice(0..-1)
-    should_shift = true
+    # memo represents the total tallied score. reduction sums into this score
+    copy_array = self.slice(0..-1)    # copies the array so modification is not destructive
+    should_shift = true   # determines whether or not the copied array should be shifted after inducing symbol or not from i
+    # default option true - remove the first index because inject doesnt include the first entry from the array when getting it's initial value from it
     case i
     when Symbol
-      sym = i
+      sym = i   # saves the symbol stored in i to sym for the non-block method calls
     when Fixnum
-      memo = i
-      should_shift = false
+      memo = i  # starts memo at supplied number
+      should_shift = false  # does not remove
     end
-    memo = copy_array.shift if should_shift
+    memo = copy_array.shift if should_shift   # cuts the first item into memo when not supplying an initial
     if block_given?
       copy_array.j_each do |x|
+        # store the result of yield
         memo = yield(memo,x)
       end
     else
       copy_array.j_each do |x|
+        # stores the result of calling whatever symbol on memo
         memo = memo.method(sym.to_sym).call(x)
       end
     end
-    return memo, sym
+    # returns the total sum
+    return memo
   end
 end
