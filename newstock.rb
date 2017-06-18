@@ -1,5 +1,5 @@
 def stock_picker(days)
-  # stock picker - buy low, sell high - only sell after buying
+  # stock picker - buy low, sell high
   low = days.min
   high = days.max
 
@@ -12,6 +12,6 @@ def stock_picker(days)
   sell_day = days.find_index(high)
   return [buy_day, sell_day, low, high]
 end
-days = [17,3,4,9,15,8,6,2,1]
+days = [17,3,15,9,15,1,8,6,2,1]
 buy, sell, low, high = stock_picker(days)
 puts "Buy on Day #{buy} for #{low} units.\nSell on Day #{sell} for #{high} units."
