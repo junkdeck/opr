@@ -5,6 +5,7 @@ module Enumerable
     end
     return self
   end
+
   def j_each_index
     i = 0
     self.j_each do |x|
@@ -13,6 +14,7 @@ module Enumerable
     end
     return self
   end
+
   def j_select
     true_values_from_self = []
     self.j_each do |x|
@@ -20,6 +22,7 @@ module Enumerable
     end
     return true_values_from_self
   end
+
   def j_all?
     # first false returns false
     first_false = true
@@ -30,6 +33,7 @@ module Enumerable
     end
     return first_false
   end
+
   def j_any?
     # first true returns true
     if block_given?
@@ -41,6 +45,7 @@ module Enumerable
     end
     return true
   end
+
   def j_none?
     # essentially an "any?" reverser
     if block_given?
@@ -51,6 +56,7 @@ module Enumerable
     end
     return false
   end
+
   def j_count(arg=true)
     # counts the amount of items in a list. counts all items if no argument or block is provided.
     # increments if argument supplied matches the item, or if the expression in a block evaluates as true
@@ -72,6 +78,7 @@ module Enumerable
     end
     return i
   end
+
   def j_map
     mapped_array = []
     self.j_each do |x|
@@ -79,8 +86,27 @@ module Enumerable
     end
     return mapped_array
   end
-  def j_inject
-    # basically reduce
 
+  def j_inject(i = false, sym = nil)
+    copy_array = self.slice(0..-1)
+    should_shift = true
+    case i
+    when Symbol
+      sym = i
+    when Fixnum
+      memo = i
+      should_shift = false
+    end
+    memo = copy_array.shift if should_shift
+    if block_given?
+      copy_array.j_each do |x|
+        memo = yield(memo,x)
+      end
+    else
+      copy_array.j_each do |x|
+        memo = memo.method(sym.to_sym).call(x)
+      end
+    end
+    return memo, sym
   end
 end
