@@ -115,3 +115,7 @@ module Enumerable
     return memo
   end
 end
+
+def multiply_els(arr)
+  arr.j_inject(:*)
+end
