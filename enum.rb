@@ -79,10 +79,17 @@ module Enumerable
     return i
   end
 
-  def j_map
+  def j_map(proc = false)
     mapped_array = []
-    self.j_each do |x|
-      mapped_array << yield(x)
+    if proc
+      # execute the proc
+      self.j_each do |x|
+        mapped_array << proc.call(x)
+      end
+    elsif block_given?
+      self.j_each do |x|
+        mapped_array << yield(x)
+      end
     end
     return mapped_array
   end
