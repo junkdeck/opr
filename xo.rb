@@ -12,9 +12,9 @@ class Game
 
   def tagline_generator
     tags = [
-      "raw and rowdy",
+      "",
       "family style",
-      "oldschool",
+      "vintage time waster",
       "roguelite puzzler",
       "desperate scramble for a portfolio piece",
       "Y2K compliant",
@@ -72,7 +72,7 @@ class Game
     while @@game_running
       hello_message # displays the fancy logo and instructions on how to play
 
-      puts "Player #{@current_player + 1}, you're up!" unless @won
+      puts @won ? "\tPlayer #{@current_player + 1} wins!" : "\tPlayer #{@current_player + 1}, you're up!"
       if @error_message
         puts "\t#{@error_message}"
         @error_message = nil
@@ -104,7 +104,6 @@ class Game
       else
         # switches between player 1 and 2
         if check_for_winner
-          @error_message = "Player #{@current_player + 1} wins!"
           @won = true
         else
           toggle_player
