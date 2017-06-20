@@ -7,17 +7,60 @@ class Game
   def initialize
     @current_player = 0
     @board = Board.new
+    @tagline = tagline_generator
+  end
+
+  def tagline_generator
+    tags = [
+      "raw and rowdy",
+      "family style",
+      "oldschool",
+      "roguelite puzzler",
+      "desperate scramble for a portfolio",
+      "Y2K compliant",
+      "over the shoulder boulder holder",
+      "never-seen-before",
+      "illustrious career all started with",
+      "diet contains natural sources of",
+      "chopped & screwed",
+      "proud to present",
+      "sick and tired of",
+      "original recipe",
+      "visually impressive",
+      "dangerously spicy",
+      "hot and heavy",
+      "interdimensional nosedive",
+      "curio of the millenium",
+      "straight out the oven",
+      "sparkly and clean",
+      "drinking that sweet, sweet",
+      "homemade",
+      "jerry-rigged",
+      "barely functional",
+      "multi-player only",
+      "early access",
+      "crowdfunded",
+      "carrot-top of cli entertainment",
+      "enterprise-level server infrastructure",
+      "Brand New",
+      "Europe's Finest",
+      "dynamic tagline generated",
+      "word of the wise: do not operate heavy machinery after using",
+      "ruby implementation of tic-tac-toe"
+    ]
+    tag = rand(0..tags.length+1)
+    return tags[tag]
   end
 
   def hello_message
     system("clear")
     message =
     "
-    junkdeck's
+    junkdeck's #{@tagline}
     ██╗  ██╗ ██████╗       ██████╗ ██╗   ██╗██████╗ ██╗   ██╗
     ╚██╗██╔╝██╔═══██╗      ██╔══██╗██║   ██║██╔══██╗╚██╗ ██╔╝
-    ╚███╔╝ ██║   ██║█████╗██████╔╝██║   ██║██████╔╝ ╚████╔╝
-    ██╔██╗ ██║   ██║╚════╝██╔══██╗██║   ██║██╔══██╗  ╚██╔╝
+     ╚███╔╝ ██║   ██║█████╗██████╔╝██║   ██║██████╔╝ ╚████╔╝
+     ██╔██╗ ██║   ██║╚════╝██╔══██╗██║   ██║██╔══██╗  ╚██╔╝
     ██╔╝ ██╗╚██████╔╝      ██║  ██║╚██████╔╝██████╔╝   ██║
     ╚═╝  ╚═╝ ╚═════╝       ╚═╝  ╚═╝ ╚═════╝ ╚═════╝    ╚═╝
     ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─
@@ -30,9 +73,9 @@ class Game
     while @@game_running
       hello_message # displays the fancy logo and instructions on how to play
       # updates the game board to reflect changes brought by inputting coordinates
-      puts "Player #{@current_player + 1}, you're up!"
+      puts "\tPlayer #{@current_player + 1}, you're up!"
       if @error_message
-        puts @error_message
+        puts "\t#{@error_message}"
         @error_message = nil
       else
         print "\n"
@@ -50,6 +93,10 @@ class Game
         @error_message = "Hey! That square's already occupied!"
       rescue IOError
         @error_message = "Invalid coordinate!"
+      rescue Interrupt
+        system("clear")
+        puts "Thanks for playing!"
+        exit
       else
         # switches between player 1 and 2
         toggle_player
@@ -60,8 +107,8 @@ class Game
   end
 
   def get_input
-    # returns a sanitized input, recognizes only 'exit' and a-c // 1-3
-    input = gets.chomp
+    # returns a sanitized input, recognizes only a-c // 1-3
+    input = gets.chomp.downcase
     coords = input.scan(/^([a-cA-C][1-3])/).join('')
 
     unless coords.length > 0
@@ -118,15 +165,15 @@ class Game
     end
     def draw_board
       message =
-      "    A   B   C  \n"\
-      "  ╔═══╦═══╦═══╗\n"\
-      "1 ║ #{@squares[0]} ║ #{@squares[1]} ║ #{@squares[2]} ║\n"\
-      "  ╠═══╬═══╬═══╣\n"\
-      "2 ║ #{@squares[3]} ║ #{@squares[4]} ║ #{@squares[5]} ║\n"\
-      "  ╠═══╬═══╬═══╣\n"\
-      "3 ║ #{@squares[6]} ║ #{@squares[7]} ║ #{@squares[8]} ║\n"\
-      "  ╚═══╩═══╩═══╝\n"
-      puts message
+      "\t    A   B   C  \n"\
+      "\t  ╔═══╦═══╦═══╗\n"\
+      "\t1 ║ #{@squares[0]} ║ #{@squares[1]} ║ #{@squares[2]} ║\n"\
+      "\t  ╠═══╬═══╬═══╣\n"\
+      "\t2 ║ #{@squares[3]} ║ #{@squares[4]} ║ #{@squares[5]} ║\n"\
+      "\t  ╠═══╬═══╬═══╣\n"\
+      "\t3 ║ #{@squares[6]} ║ #{@squares[7]} ║ #{@squares[8]} ║\n"\
+      "\t  ╚═══╩═══╩═══╝\n\n\n"
+      puts message.rjust(40)
     end
 
     def check_for_winner
