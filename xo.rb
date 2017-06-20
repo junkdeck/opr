@@ -7,10 +7,10 @@ class Game
   def initialize
     @current_player = 0
     @board = Board.new
-    hello_message # displays the fancy logo and instructions on how to play
   end
 
   def hello_message
+    system("clear")
     message =
     "
     junkdeck's
@@ -28,11 +28,14 @@ class Game
 
   def main_loop
     while @@game_running
+      hello_message # displays the fancy logo and instructions on how to play
       # updates the game board to reflect changes brought by inputting coordinates
       puts "Player #{@current_player + 1}, you're up!"
       if @error_message
         puts @error_message
         @error_message = nil
+      else
+        print "\n"
       end
       @board.draw_board
 
@@ -42,6 +45,7 @@ class Game
         print "\n"  # lil linebreak
 
         fill_square(input)
+        @board.check_for_winner
       rescue ArgumentError
         @error_message = "Hey! That square's already occupied!"
       rescue IOError
@@ -49,6 +53,7 @@ class Game
       else
         # switches between player 1 and 2
         toggle_player
+        system("clear")
         # nothing left to do! next round, please!
       end
     end
@@ -62,7 +67,6 @@ class Game
     unless coords.length > 0
       raise IOError
     end
-
     return coords
   end
 
@@ -136,8 +140,21 @@ class Game
         [0,4,7],
         [2,4,6]
       ]
+
+      @squares.each do |x|
+        puts x
+      end
+
     end
   end
+
+  class Player
+    def initialize(name)
+      @name = name
+      @wins = 0
+    end
+  end
+
 end
 
 xo = Game.new
