@@ -1,3 +1,4 @@
+require_relative "tagline"
 
 # cli tic tac toe, oop style
 class Game
@@ -6,49 +7,8 @@ class Game
   def initialize
     @current_player = rand(0..1)
     @board = Board.new
-    @tagline = tagline_generator
+    @tagline = Tagline::tagline_generator
     @won = false
-  end
-
-  def tagline_generator
-    tags = [
-      "",
-      "family style",
-      "vintage time waster",
-      "roguelite puzzler",
-      "desperate scramble for a portfolio piece",
-      "Y2K compliant",
-      "never-seen-before",
-      "illustrious career all started with",
-      "diet contains natural sources of",
-      "chopped & screwed",
-      "proud to present",
-      "sick and tired of",
-      "original recipe",
-      "visually impressive",
-      "dangerously spicy",
-      "hot and heavy",
-      "interdimensional nosedive",
-      "curio of the millenium",
-      "straight out the oven",
-      "sparkly and clean",
-      "drinking that sweet, sweet",
-      "homemade",
-      "jerry-rigged",
-      "barely functional",
-      "multi-player only",
-      "early access",
-      "crowdfunded",
-      "carrot-top of cli entertainment",
-      "enterprise-level server infrastructure framework",
-      "Brand New",
-      "dynamic tagline generated",
-      "personal warning: do not operate heavy machinery after using",
-      "ruby implementation of tic-tac-toe",
-      "journey to the planet named",
-    ]
-    tag = rand(0..tags.length+1)
-    return tags[tag]
   end
 
   def hello_message
@@ -83,6 +43,7 @@ class Game
       @board.draw_board
       # error handling block
       begin
+        print ">" # input prompt
         input = get_input
         print "\n"  # lil linebreak
 
@@ -210,7 +171,7 @@ class Game
       "\t2 ║ #{@squares[3]} ║ #{@squares[4]} ║ #{@squares[5]} ║\n"\
       "\t  ╠═══╬═══╬═══╣\n"\
       "\t3 ║ #{@squares[6]} ║ #{@squares[7]} ║ #{@squares[8]} ║\n"\
-      "\t  ╚═══╩═══╩═══╝\n\n\n"
+      "\t  ╚═══╩═══╩═══╝\n\n"
       puts message
     end
   end

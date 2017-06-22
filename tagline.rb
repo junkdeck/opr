@@ -1,7 +1,7 @@
 module Tagline
   def self.tagline_generator
     tags = [
-      "",
+      "chunky",
       "family style",
       "vintage time waster",
       "roguelite puzzler",
@@ -21,7 +21,7 @@ module Tagline
       "curio of the millenium",
       "straight out the oven",
       "sparkly and clean",
-      "drinking that sweet, sweet",
+      "sweet, sweet",
       "homemade",
       "jerry-rigged",
       "barely functional",
@@ -35,6 +35,7 @@ module Tagline
       "personal warning: do not operate heavy machinery after using",
       "ruby implementation of tic-tac-toe",
       "journey to the planet named",
+      ""
     ]
     tag = rand(0..tags.length+1)
     return tags[tag]
