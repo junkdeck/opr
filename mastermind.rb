@@ -14,6 +14,8 @@ class Game
       print ">" # screen prompt
       begin
         input = get_input
+      rescue ArgumentError
+        @err_msg = "Input must be 4 digits between 0 and 6!"
       rescue Interrupt
         break_game
       end
@@ -24,7 +26,7 @@ class Game
     input = gets.chomp.scan(/\d/).map(&:to_i) # strips out all non-letters
     unless input.length == 4 && input.all?{|x| x.between?(0,6)}
       # checks for bogus input and sets error message accordingly
-      @err_msg = "Input must be 4 digits between 0 and 6!"
+      raise ArgumentError
     end
   end
 
@@ -41,10 +43,10 @@ class Game
     ██ ██▌▐█▌▐█ ▪▐▌▐█▄▪▐█ ▐█▌·▐█▄▄▌▐█•█▌██ ██▌▐█▌▐█▌██▐█▌██. ██
     ▀▀  █▪▀▀▀ ▀  ▀  ▀▀▀▀  ▀▀▀  ▀▀▀ .▀  ▀▀▀  █▪▀▀▀▀▀▀▀▀ █▪▀▀▀▀▀•
     = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-               guess the code! 4 digits between 0-6
+        guess the code! input accepts 4 digits between 0-6
 "
   puts title
-  print "#{@err_msg}\n"
+  print "\t#{@err_msg}\n"
   unless @err_msg.empty?
     @err_msg = ""
   end
