@@ -14,7 +14,7 @@ class Game
   def main_loop
     loop do
       render_screen
-      print ">" # screen prompt
+      print "\t>" # screen prompt
       begin
         input = get_input
       rescue ArgumentError
@@ -23,6 +23,7 @@ class Game
         break_game
       else
         @history[@history.length] = {guess: input, feedback: @combo.try_guess(input)}
+        @remaining_turns -= 1
       end
     end
   end
@@ -40,32 +41,38 @@ class Game
   def render_screen
     # renders the changed game state to screen
     system("clear")   # flush display before amending new data for a clean pro look
-
-    puts "
-    junkdeck's #{@tag}
-
+    puts "    junkdeck's #{@tag}
     • ▌ ▄ ·.  ▄▄▄· .▄▄ · ▄▄▄▄▄▄▄▄ .▄▄▄  • ▌ ▄ ·. ▪   ▐ ▄ ·▄▄▄▄
     ·██ ▐███▪▐█ ▀█ ▐█ ▀. •██  ▀▄.▀·▀▄ █··██ ▐███▪██ •█▌▐███▪ ██
     ▐█ ▌▐▌▐█·▄█▀▀█ ▄▀▀▀█▄ ▐█.▪▐▀▀▪▄▐▀▀▄ ▐█ ▌▐▌▐█·▐█·▐█▐▐▌▐█· ▐█▌
     ██ ██▌▐█▌▐█ ▪▐▌▐█▄▪▐█ ▐█▌·▐█▄▄▌▐█•█▌██ ██▌▐█▌▐█▌██▐█▌██. ██
     ▀▀  █▪▀▀▀ ▀  ▀  ▀▀▀▀  ▀▀▀  ▀▀▀ .▀  ▀▀▀  █▪▀▀▀▀▀▀▀▀ █▪▀▀▀▀▀•
     = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-    guess the code! input accepts 4 digits between 1-6"
+    the code has 4 digits between 1-6"
     print "\t#{@err_msg}\n"
     unless @err_msg.empty?
       @err_msg = ""
     end
-
-    # puts "HISTORY: #{@history}"
-
+    # shows past guesses and feedback on those guesses. history object is sorted as following:  n => {:guess, :feedback}
     @history.each do |index,log|
-      puts "#{log[:guess]}, #{log[:feedback]}"
-      # puts "#{x[:guess]} | #{x[:feedback]}"
+      if index == 0
+        print "\t╔═════════════════╗\n"
+        # else
+      end
+      print "\t"
+      log[:guess].each do |x|
+        print " #{x}"
+      end
+      print ' |'
+      log[:feedback].each do |x|
+        print " #{x}"
+      end
+      print "\n"
+      # puts "\t#{log[:guess]}, #{log[:feedback]}"
     end
-    # board = "#{@combo.code[0]} #{@combo.code[1]} #{@combo.code[2]} #{@combo.code[3]} "\
-    # "| #{@combo.feedback[0]} #{@combo.feedback[1]} #{@combo.feedback[2]} #{@combo.feedback[3]}" if @history
-    # user guess > feedback
-    # puts board
+    # cheat mode display of correct code, remove later
+    board = "#{@combo.code[0]} #{@combo.code[1]} #{@combo.code[2]} #{@combo.code[3]} "
+    puts board
 
   end
 
@@ -98,14 +105,18 @@ class Game
 
     def try_guess(guess)
       @feedback = []    # empty feedback from previous guess
-      # compares the guess with the randomly generated code - o is correct number, O is correct number & position
+      code = @code.slice(0..-1) # copies the instance variable
+      # scans for correct placement, then correct number, resetting every occurence to 0 to avoid false repeats
       guess.each_with_index do |x,i|
-        if @code.include?(x)
-          if @code[i] == x
-            @feedback << 'O'
-          else
-            @feedback << 'o'
-          end
+        if code[i] == x   # if the current index of the code is the same number, we've got a correct placement
+          @feedback << 'O'
+          code[i] = 0
+        end
+      end
+      guess.each_with_index do |x,i|
+        if code.include?(x)
+          @feedback << 'o'
+          code[code.find_index(x)] = 0
         end
       end
       return @feedback
@@ -114,4 +125,11 @@ class Game
 end
 
 mm = Game.new
-mm.main_loop
+puts "hey there! what'd you like to do?"
+input = gets.chomp
+case input
+when 'exit'
+  exit
+else
+  mm.main_loop
+end
