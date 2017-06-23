@@ -16,7 +16,7 @@ class Game
       begin
       render_screen
       if @remaining_turns <= 0
-        @msg = "You lose! Correct code was: #{@combo.code}. Try again? (Y/n)"
+				@msg = "You lose! Correct code was: #{@combo.code.join('')}. Try again? (Y/n)"
         render_screen
         print "\t>"
         input = gets.chomp.downcase
@@ -24,7 +24,7 @@ class Game
         when "y"
           new_game
         else
-          raise Interrupt
+					break_game
         end
         next
       end
@@ -37,6 +37,19 @@ class Game
       else
         @history[@history.length] = {guess: input, feedback: @combo.try_guess(input)}
         @remaining_turns -= 1
+
+				if @combo.feedback.all?{|x| x == "O"} && @combo.feedback.length >= 4
+					@msg = "You win! Correct code was #{@combo.code.join('')}. Play again? (Y/n)"
+					render_screen
+					input = gets.chomp
+					case input
+					when "y"
+						new_game
+						next
+					else
+						break_game
+					end
+				end
       end
     end
   end
@@ -71,6 +84,9 @@ class Game
       print "\t╔════════════════╗\n"
       print "\t╚════════════════╝\n"
     end
+
+    puts @combo.code.inspect
+
     # shows past guesses and feedback on those guesses. history object is sorted as following:  n => {:guess, :feedback}
     @history.each do |index,log|
         print "\t╔════════════════╗\n" if index == 0
@@ -90,11 +106,8 @@ class Game
       print "\t╚════════════════╝\n" if index == (@history.length-1)
       # keeps the prompt down as many turns are left to keep its position the same
     end
-    # cheat mode display of correct code, remove later
-    # puts @combo.code.join("")
     @remaining_turns = 0 if @remaining_turns < 0
     print "\n"*@remaining_turns
-
   end
 
   def new_game
@@ -124,7 +137,8 @@ class Game
       end
     end
 
-    def try_guess(guess)
+    def try_guess(input)
+      guess = input.slice(0..-1)  # copies the input
       @feedback = []    # empty feedback from previous guess
       code = @code.slice(0..-1) # copies the instance variable
 
@@ -132,10 +146,12 @@ class Game
       guess.each_with_index do |x,i|
         if code[i] == x   # if the current index of the code is the same number, we've got a correct placement
           @feedback << 'O'
-          code[i] = 0
-          # guess[i] = 0
+          puts code.inspect
+          code.map!{|n| n == x ? 0 : n }
+          puts code.inspect
         end
       end
+      puts guess.inspect
       guess.each_with_index do |x,i|
         if code.include?(x)
           @feedback << 'o'
@@ -147,5 +163,5 @@ class Game
   end
 end
 
-mm = Game.new
-mm.main_loop
+# mm = Game.new
+# mm.main_loop
