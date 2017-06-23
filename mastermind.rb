@@ -13,6 +13,7 @@ class Game
 
   def main_loop
     loop do
+      begin
       render_screen
       if @remaining_turns <= 0
         @msg = "You lose! Correct code was: #{@combo.code}. Try again? (Y/n)"
@@ -28,7 +29,6 @@ class Game
         next
       end
       print "\t>" # screen prompt
-      begin
         input = get_input
       rescue ArgumentError
         @msg = "Input must be 4 digits between 1 and 6!"
@@ -148,11 +148,4 @@ class Game
 end
 
 mm = Game.new
-puts "hey there! what'd you like to do?"
-input = gets.chomp
-case input
-when 'exit'
-  exit
-else
-  mm.main_loop
-end
+mm.main_loop
