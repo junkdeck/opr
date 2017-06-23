@@ -85,8 +85,6 @@ class Game
       print "\t╚════════════════╝\n"
     end
 
-    puts @combo.code.inspect
-
     # shows past guesses and feedback on those guesses. history object is sorted as following:  n => {:guess, :feedback}
     @history.each do |index,log|
         print "\t╔════════════════╗\n" if index == 0
@@ -146,16 +144,18 @@ class Game
       guess.each_with_index do |x,i|
         if code[i] == x   # if the current index of the code is the same number, we've got a correct placement
           @feedback << 'O'
-          puts code.inspect
-          code.map!{|n| n == x ? 0 : n }
-          puts code.inspect
+          # code[i] = 0
+          guess[i] = 0
+          # removes all matching numbers if they're all in the correct spot and have the same occurence as the code
+          guess.map!{|n| n == x ? 0 : n } if code.count(x) == guess.count(x)
         end
       end
       puts guess.inspect
       guess.each_with_index do |x,i|
         if code.include?(x)
           @feedback << 'o'
-          code[code.find_index(x)] = 0
+          # sets all matching numbers to 0 if the guess has the same occurence as the code itself. avoids the same number triggering multiple times
+          guess.map!{|n| n == x ? 0 : n } if code.count(x) == guess.count(x)
         end
       end
       return @feedback
@@ -163,5 +163,5 @@ class Game
   end
 end
 
-# mm = Game.new
-# mm.main_loop
+mm = Game.new
+mm.main_loop
