@@ -5,7 +5,7 @@ class Game
 
   def initialize
     @tag = Tagline::tagline_generator
-    @err_msg = ""
+    @msg = ""
     @combo = Combination.new
     @remaining_turns = 12
     @history = Hash.new(0)
@@ -14,11 +14,24 @@ class Game
   def main_loop
     loop do
       render_screen
+      if @remaining_turns <= 0
+        @msg = "You lose! Correct code was: #{@combo.code}. Try again? (Y/n)"
+        render_screen
+        print "\t>"
+        input = gets.chomp.downcase
+        case input
+        when "y"
+          new_game
+        else
+          raise Interrupt
+        end
+        next
+      end
       print "\t>" # screen prompt
       begin
         input = get_input
       rescue ArgumentError
-        @err_msg = "Input must be 4 digits between 1 and 6!"
+        @msg = "Input must be 4 digits between 1 and 6!"
       rescue Interrupt
         break_game
       else
@@ -48,31 +61,39 @@ class Game
     ██ ██▌▐█▌▐█ ▪▐▌▐█▄▪▐█ ▐█▌·▐█▄▄▌▐█•█▌██ ██▌▐█▌▐█▌██▐█▌██. ██
     ▀▀  █▪▀▀▀ ▀  ▀  ▀▀▀▀  ▀▀▀  ▀▀▀ .▀  ▀▀▀  █▪▀▀▀▀▀▀▀▀ █▪▀▀▀▀▀•
     = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-    the code has 4 digits between 1-6"
-    print "\t#{@err_msg}\n"
-    unless @err_msg.empty?
-      @err_msg = ""
+                4 digits, 1-6 // remaining turns : #{@remaining_turns}"
+    print "\t#{@msg}\n"
+    unless @msg.empty?
+      @msg = ""
+    end
+
+    if @history.empty?
+      print "\t╔════════════════╗\n"
+      print "\t╚════════════════╝\n"
     end
     # shows past guesses and feedback on those guesses. history object is sorted as following:  n => {:guess, :feedback}
     @history.each do |index,log|
-      if index == 0
-        print "\t╔═════════════════╗\n"
-        # else
-      end
-      print "\t"
+        print "\t╔════════════════╗\n" if index == 0
+                #| 1 2 3 4 | oooo
+      print "\t║"
       log[:guess].each do |x|
         print " #{x}"
       end
-      print ' |'
+      print ' | '
+      i = 4   # keeps track of how many characters was printed
       log[:feedback].each do |x|
-        print " #{x}"
+        print "#{x}"
+        i -= 1
       end
-      print "\n"
-      # puts "\t#{log[:guess]}, #{log[:feedback]}"
+      print " "*i
+      print " ║\n"
+      print "\t╚════════════════╝\n" if index == (@history.length-1)
+      # keeps the prompt down as many turns are left to keep its position the same
     end
     # cheat mode display of correct code, remove later
-    board = "#{@combo.code[0]} #{@combo.code[1]} #{@combo.code[2]} #{@combo.code[3]} "
-    puts board
+    # puts @combo.code.join("")
+    @remaining_turns = 0 if @remaining_turns < 0
+    print "\n"*@remaining_turns
 
   end
 
@@ -106,11 +127,13 @@ class Game
     def try_guess(guess)
       @feedback = []    # empty feedback from previous guess
       code = @code.slice(0..-1) # copies the instance variable
+
       # scans for correct placement, then correct number, resetting every occurence to 0 to avoid false repeats
       guess.each_with_index do |x,i|
         if code[i] == x   # if the current index of the code is the same number, we've got a correct placement
           @feedback << 'O'
           code[i] = 0
+          # guess[i] = 0
         end
       end
       guess.each_with_index do |x,i|
