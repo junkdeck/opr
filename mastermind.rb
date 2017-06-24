@@ -16,6 +16,7 @@ class Game
     @combo = Combination.new
     @remaining_turns = 12
     @history = Hash.new(0)
+    @player = nil   # set later by get_choice_input
   end
 
   def main_loop
@@ -24,6 +25,14 @@ class Game
         render_screen
         unless @game_running
           get_choice_input
+          if @player.mode == "CPU"
+            @msg = "Input a code, 4 digits between 1-6."
+            render_screen
+            print "\t>"
+            @combo.code = @player.get_input(true)
+          else
+            @combo.cpu_code
+          end
           next
         end
         if @remaining_turns <= 0
@@ -143,11 +152,11 @@ class Game
       @mode = mode
     end
 
-    def get_input
+    def get_input(human_entry=false)
       input = []
-      if @mode == "CPU"
+      if @mode == "CPU" && !human_entry
         4.times{ input << rand(1..6) }
-      elsif @mode == "P1"
+      elsif @mode == "P1" || human_entry
         input = gets.strip.chomp.scan(/\d/).map(&:to_i) # strips out all non-letters
         unless input.length == 4 && input.all?{|x| x.between?(1,6)}
           # checks for bogus input and sets error message accordingly
@@ -159,17 +168,17 @@ class Game
   end
 
   class Combination
-    attr_reader :code, :feedback
+    attr_accessor :code
+    attr_reader :feedback
 
     def initialize
       # if player chooses
       # combination = Game::get_input
       @code = []
       @feedback = []
-      new_code
     end
 
-    def new_code
+    def cpu_code
       4.times do
         @code << rand(1..6)
       end
