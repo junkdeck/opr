@@ -77,7 +77,7 @@ class Game
     ██ ██▌▐█▌▐█ ▪▐▌▐█▄▪▐█ ▐█▌·▐█▄▄▌▐█•█▌██ ██▌▐█▌▐█▌██▐█▌██. ██
     ▀▀  █▪▀▀▀ ▀  ▀  ▀▀▀▀  ▀▀▀  ▀▀▀ .▀  ▀▀▀  █▪▀▀▀▀▀▀▀▀ █▪▀▀▀▀▀•
     = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-    #{@game_running ? "4 digits, 1-6 //remaining turns : #{@remaining_turns}" : "#{"Hello!" if @first_play} Select a code generation mode." }"
+              #{@game_running ? "4 digits, 1-6 //remaining turns : #{@remaining_turns}" : "#{"Hello!" if @first_play} Select a code generation mode." }"
     print "\t#{@msg}\n"
     puts @combo.code.inspect
     unless @msg.empty?
@@ -179,13 +179,14 @@ class Game
       code = @code.slice(0..-1) # copies the instance variable
 
       code.each_with_index do |x,i|
-        if guess[i] == x
+        if guess[i] == x    # check for correct placements first
           @feedback << "O"
           guess[i] = 0
-        elsif guess.count(x) == code.count(x)
+        elsif guess.count(x) == code.count(x)   # makes sure multiple digits in the guess don't all trigger if code only contains one
           @feedback << "o"
         elsif guess.include?(x)
           @feedback << "o"
+            # removes the current code digit from guess to avoid one digit triggering as correct number for every occurence in the guess
           guess.map!{|n| x == n ? 0 : n}
         end
       end
