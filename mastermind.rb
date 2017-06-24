@@ -31,12 +31,7 @@ class Game
           render_screen
           print "\t>"
           input = gets.chomp.downcase
-          case input
-          when "y"
-            new_game
-          else
-            break_game
-          end
+          input == 'y' || input == '' ? new_game : break_game
           next
         end
         print "\t>" # screen prompt
