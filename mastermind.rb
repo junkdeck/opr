@@ -181,9 +181,10 @@ class Game
       code.each_with_index do |x,i|
         if guess[i] == x
           @feedback << "O"
+          guess[i] = 0
         elsif guess.count(x) == code.count(x)
           @feedback << "o"
-        elsif guess.count(x) > 1
+        elsif guess.include?(x)
           @feedback << "o"
           guess.map!{|n| x == n ? 0 : n}
         end
