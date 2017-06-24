@@ -77,7 +77,7 @@ class Game
     ██ ██▌▐█▌▐█ ▪▐▌▐█▄▪▐█ ▐█▌·▐█▄▄▌▐█•█▌██ ██▌▐█▌▐█▌██▐█▌██. ██
     ▀▀  █▪▀▀▀ ▀  ▀  ▀▀▀▀  ▀▀▀  ▀▀▀ .▀  ▀▀▀  █▪▀▀▀▀▀▀▀▀ █▪▀▀▀▀▀•
     = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-              #{@game_running ? "4 digits, 1-6 //remaining turns : #{@remaining_turns}" : "#{"Hello!" if @first_play} Select a code generation mode." }"
+    #{@game_running ? "4 digits, 1-6 //remaining turns : #{@remaining_turns}" : "#{"Hello!" if @first_play} Select a code generation mode." }"
     print "\t#{@msg}\n"
     unless @msg.empty?
       @msg = ""
@@ -143,20 +143,24 @@ class Game
   end
 
   class Player
+    attr_reader :mode
     def initialize(mode)
       @mode = mode
     end
 
     def get_input
-      input = gets.strip.chomp.scan(/\d/).map(&:to_i) # strips out all non-letters
-      unless input.length == 4 && input.all?{|x| x.between?(1,6)}
-        # checks for bogus input and sets error message accordingly
-        raise MMInputError
-      else
-        return input
+      input = []
+      if @mode == "CPU"
+        # 4.times{ input << rand(1-6) }
+      elsif @mode == "P1"
+        input = gets.strip.chomp.scan(/\d/).map(&:to_i) # strips out all non-letters
+        unless input.length == 4 && input.all?{|x| x.between?(1,6)}
+          # checks for bogus input and sets error message accordingly
+          raise MMInputError
+        end
       end
+      return input
     end
-
   end
 
   class Combination
@@ -167,6 +171,10 @@ class Game
       # combination = Game::get_input
       @code = []
       @feedback = []
+      new_code
+    end
+
+    def new_code
       4.times do
         @code << rand(1..6)
       end
@@ -194,5 +202,5 @@ class Game
   end
 end
 
-    mm = Game.new
-    mm.main_loop
+mm = Game.new
+mm.main_loop
