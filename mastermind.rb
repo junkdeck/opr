@@ -79,7 +79,6 @@ class Game
     = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
               #{@game_running ? "4 digits, 1-6 //remaining turns : #{@remaining_turns}" : "#{"Hello!" if @first_play} Select a code generation mode." }"
     print "\t#{@msg}\n"
-    puts @combo.code.inspect
     unless @msg.empty?
       @msg = ""
     end
@@ -186,7 +185,7 @@ class Game
           @feedback << "o"
         elsif guess.include?(x)
           @feedback << "o"
-            # removes the current code digit from guess to avoid one digit triggering as correct number for every occurence in the guess
+          # removes the current code digit from guess to avoid one digit triggering as correct number for every occurence in the guess
           guess.map!{|n| x == n ? 0 : n}
         end
       end
