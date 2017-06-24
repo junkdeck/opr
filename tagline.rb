@@ -35,7 +35,7 @@ module Tagline
       "personal warning: do not operate heavy machinery after using",
       "ruby implementation of tic-tac-toe",
       "journey to the planet named",
-      ""
+      "slowly broiled"
     ]
     tag = rand(0..tags.length+1)
     return tags[tag]
