@@ -151,11 +151,7 @@ class Game
     def get_input
       input = []
       if @mode == "CPU"
-<<<<<<< HEAD
         4.times{ input << rand(1..6) }
-=======
-        # 4.times{ input << rand(1-6) }
->>>>>>> 490b3c30b286df46934d7254b5cae44abaa11672
       elsif @mode == "P1"
         input = gets.strip.chomp.scan(/\d/).map(&:to_i) # strips out all non-letters
         unless input.length == 4 && input.all?{|x| x.between?(1,6)}
