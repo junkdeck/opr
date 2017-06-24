@@ -178,7 +178,7 @@ class Game
       @feedback = []    # empty feedback from previous guess
       code = @code.slice(0..-1) # copies the instance variable
 
-      code.each do |x|
+      code.each_with_index do |x,i|
         if guess[i] == x
           @feedback << "O"
         elsif guess.include?(x)
