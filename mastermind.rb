@@ -178,12 +178,25 @@ class Game
       @feedback = []    # empty feedback from previous guess
       code = @code.slice(0..-1) # copies the instance variable
 
-      code.each_with_index do |x,i|
-        if guess[i] == x # if the current index of guess is the same number, we've got a correct placement
-          @feedback << "O"
+      # scans for correct placement, then correct number, resetting every occurence to 0 to avoid false repeats
+      guess.each_with_index do |x,i|
+        if code[i] == x   # if the current index of the code is the same number, we've got a correct placement
+          @feedback << 'O'
+          # code[i] = 0
+          guess[i] = 0
+          # removes all matching numbers if they're all in the correct spot and have the same occurence as the code
+          guess.map!{|n| n == x ? 0 : n } if code.count(x) == guess.count(x)
         end
       end
-
+      puts guess.inspect
+      guess.each_with_index do |x,i|
+        if code.include?(x)
+          @feedback << 'o'
+          # sets all matching numbers to 0 if the guess has the same occurence as the code itself. avoids the same number triggering multiple times
+          guess.map!{|n| n == x ? 0 : n } if code.count(x) == guess.count(x)
+        end
+      end
+      return @feedback
     end
   end
 end
