@@ -25,16 +25,23 @@ class Game
         render_screen
         unless @game_running
           get_choice_input
-          if @player.mode == "CPU"
+          if @player.class == "CPU"
             @msg = "Input a code, 4 digits between 1-6."
             render_screen
             print "\t>"
-            @combo.code = @player.get_input(true)
+            @combo.code = Player.get_input
           else
-            @combo.cpu_code
+            @combo.code = CPU.cpu_random
           end
           next
         end
+      rescue MMInputError
+        @msg = "Input must be 4 digits between 1 and 6!"
+      rescue WelcomeScreenError
+        @msg = "1 or 2 only!"
+      rescue Interrupt
+        break_game
+      else
         if @remaining_turns <= 0
           @msg = "You lose! Correct code was: #{@combo.code.join('')}. Try again? (Y/n)"
           render_screen
@@ -44,29 +51,10 @@ class Game
           next
         end
         print "\t>" # screen prompt
-        input = @player.get_input
-      rescue MMInputError
-        @msg = "Input must be 4 digits between 1 and 6!"
-      rescue WelcomeScreenError
-        @msg = "1 or 2 only!"
-      rescue Interrupt
-        break_game
-      else
+        input = @player.get_input(fdbk_data = @combo.feedback)
         @history[@history.length] = {guess: input, feedback: @combo.try_guess(input)}
         @remaining_turns -= 1
-
-        if @combo.feedback.all?{|x| x == "O"} && @combo.feedback.length >= 4
-          @msg = "You win! Correct code was #{@combo.code.join('')}. Play again? (Y/n)"
-          render_screen
-          input = gets.chomp
-          case input
-          when "y"
-            new_game
-            next
-          else
-            break_game
-          end
-        end
+        check_win
       end
     end
   end
@@ -118,6 +106,20 @@ class Game
     print @game_running ? "\n"*@remaining_turns : "\n"*(@remaining_turns-2)
   end
 
+  def check_win
+    if @combo.feedback.all?{|x| x == "O"} && @combo.feedback.length >= 4
+      @msg = "You win! Correct code was #{@combo.code.join('')}. Play again? (Y/n)"
+      render_screen
+      input = gets.chomp
+      case input
+      when "y"
+        new_game
+      else
+        break_game
+      end
+    end
+  end
+
   def new_game
     @combo = Combination.new    # generate new code
     @remaining_turns = 12       # reset amount of turns
@@ -148,15 +150,11 @@ class Game
 
   class Player
     attr_reader :mode
-    def initialize(mode)
-      @mode = mode
+    def initialize()
     end
 
-    def get_input(human_entry=false)
+    def self.get_input
       input = []
-      if @mode == "CPU" && !human_entry
-        4.times{ input << rand(1..6) }
-      elsif @mode == "P1" || human_entry
         input = gets.strip.chomp.scan(/\d/).map(&:to_i) # strips out all non-letters
         unless input.length == 4 && input.all?{|x| x.between?(1,6)}
           # checks for bogus input and sets error message accordingly
@@ -164,6 +162,22 @@ class Game
         end
       end
       return input
+    end
+
+    def get_input
+      self.class.get_input  # calls Player.get_input, all cool like
+    end
+
+  end
+
+  class CPU < Player
+    def self.cpu_random
+      input = []
+      4.times{ input << rand(1..6) }
+      return input
+    end
+    def cpu_random
+      self.class.cpu_random
     end
   end
 
